@@ -1,0 +1,7 @@
+mode_simulation_horaires:
+  name: Mode simulation horaire
+  options:
+    - Fixe
+    - Aléatoire
+  initial: Fixe
+  icon: mdi:clock
