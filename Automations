@@ -1,0 +1,176 @@
+# 💡 Lumières - Allumage (aléatoire)
+- alias: Simulation vacances - Allumage lumières (aléatoire)
+  description: >
+    Allume les lumières à une heure aléatoire définie dans input_datetime.lumiere_on_random uniquement
+    si la simulation est active, en mode "Aléatoire", et pendant la période de vacances.
+  trigger:
+    - platform: time
+      at: input_datetime.lumiere_on_random
+  condition:
+    - condition: state
+      entity_id: input_boolean.simulation_presence
+      state: "on"
+    - condition: state
+      entity_id: input_boolean.simulation_lumieres
+      state: "on"
+    - condition: state
+      entity_id: input_select.mode_simulation_horaires
+      state: Aléatoire
+    - condition: template
+      value_template: >
+        {% set today = now().date() %}
+        {% set debut = states('input_datetime.depart_vacances') %}
+        {% set retour = states('input_datetime.retour_vacances') %}
+        {{ debut <= today.strftime('%Y-%m-%d') <= retour }}
+  action:
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.dome
+          - light.spots_couleurs
+          - light.eclairage_meubles_cuisine
+  mode: single
+
+# 💡 Lumières - Extinction (aléatoire)
+- alias: Simulation vacances - Extinction lumières (aléatoire)
+  description: >
+    Éteint les lumières à une heure aléatoire définie dans input_datetime.lumiere_off_random uniquement
+    si la simulation est active, en mode "Aléatoire", et pendant la période de vacances.
+  trigger:
+    - platform: time
+      at: input_datetime.lumiere_off_random
+  condition:
+    - condition: state
+      entity_id: input_boolean.simulation_presence
+      state: "on"
+    - condition: state
+      entity_id: input_boolean.simulation_lumieres
+      state: "on"
+    - condition: state
+      entity_id: input_select.mode_simulation_horaires
+      state: Aléatoire
+    - condition: template
+      value_template: >
+        {% set today = now().date() %}
+        {% set debut = states('input_datetime.depart_vacances') %}
+        {% set retour = states('input_datetime.retour_vacances') %}
+        {{ debut <= today.strftime('%Y-%m-%d') <= retour }}
+  action:
+    - service: light.turn_off
+      target:
+        entity_id:
+          - light.dome
+          - light.spots_couleurs
+          - light.eclairage_meubles_cuisine
+  mode: single
+
+# 📻 Radio - Lecture du matin
+- alias: Simulation vacances - Lecture radio matin (V2)
+  description: >
+    Démarre la radio le matin selon plage horaire fixe ou aléatoire (avec ou sans heure d'été).
+  trigger:
+    - platform: time
+      at: "06:00:00"
+  condition:
+    - condition: state
+      entity_id: input_boolean.simulation_presence
+      state: "on"
+    - condition: state
+      entity_id: input_boolean.simulation_multimedia
+      state: "on"
+    - condition: template
+      value_template: >
+        {% set today = now().date() %}
+        {% set debut = states('input_datetime.depart_vacances') %}
+        {% set retour = states('input_datetime.retour_vacances') %}
+        {{ debut <= today.strftime('%Y-%m-%d') <= retour }}
+  action:
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: input_select.mode_simulation_horaires
+              state: Fixe
+          sequence:
+            - delay:
+                hours: "{{ state_attr('input_datetime.simulation_matin_debut', 'hour') + (1 if is_state('input_boolean.simulation_heure_ete', 'on') else 0) }}"
+                minutes: "{{ state_attr('input_datetime.simulation_matin_debut', 'minute') }}"
+            - service: media_player.play_media
+              target:
+                entity_id:
+                  - media_player.enceinte_salon
+                  - media_player.enceinte_cuisine
+              data:
+                media_content_id: http://direct.franceinter.fr/live/franceinter-midfi.mp3
+                media_content_type: music
+        - conditions:
+            - condition: state
+              entity_id: input_select.mode_simulation_horaires
+              state: Aléatoire
+          sequence:
+            - delay:
+                minutes: "{{ range(5, 45) | random }}"
+            - service: media_player.play_media
+              target:
+                entity_id:
+                  - media_player.enceinte_salon
+                  - media_player.enceinte_cuisine
+              data:
+                media_content_id: http://direct.franceinter.fr/live/franceinter-midfi.mp3
+                media_content_type: music
+  mode: single
+
+# 📻 Radio - Lecture du soir
+- alias: 🎭 Simulation – Lecture radio soir (V2)
+  description: >
+    Lance la radio le soir pendant les vacances, selon le mode fixe ou aléatoire,
+    en tenant compte de la plage horaire du soir et du switch heure d'été.
+  trigger:
+    - platform: time
+      at: "18:00:00"
+  condition:
+    - condition: state
+      entity_id: input_boolean.simulation_presence
+      state: "on"
+    - condition: state
+      entity_id: input_boolean.simulation_multimedia
+      state: "on"
+    - condition: template
+      value_template: >
+        {% set today = now().date() %}
+        {% set debut = states('input_datetime.depart_vacances') %}
+        {% set retour = states('input_datetime.retour_vacances') %}
+        {{ debut <= today.strftime('%Y-%m-%d') <= retour }}
+  action:
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: input_select.mode_simulation_horaires
+              state: Fixe
+          sequence:
+            - delay:
+                hours: "{{ state_attr('input_datetime.simulation_soir_debut', 'hour') + (1 if is_state('input_boolean.simulation_heure_ete', 'on') else 0) }}"
+                minutes: "{{ state_attr('input_datetime.simulation_soir_debut', 'minute') }}"
+            - service: media_player.play_media
+              target:
+                entity_id:
+                  - media_player.enceinte_salon
+                  - media_player.enceinte_cuisine
+              data:
+                media_content_id: http://direct.franceinter.fr/live/franceinter-midfi.mp3
+                media_content_type: music
+        - conditions:
+            - condition: state
+              entity_id: input_select.mode_simulation_horaires
+              state: Aléatoire
+          sequence:
+            - delay:
+                minutes: "{{ range(10, 90) | random }}"
+            - service: media_player.play_media
+              target:
+                entity_id:
+                  - media_player.enceinte_salon
+                  - media_player.enceinte_cuisine
+              data:
+                media_content_id: http://direct.franceinter.fr/live/franceinter-midfi.mp3
+                media_content_type: music
+  mode: single
