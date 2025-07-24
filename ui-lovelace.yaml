@@ -1,0 +1,83 @@
+ui-lovelace.yaml:
+
+🏖️ Simulation de Vacances – Carte Lovelace
+
+title: Mode Vacances path: vacances icon: mdi:beach type: sidebar cards:
+
+type: markdown title: 🏖️ Simulation de présence content: > Cette page vous permet de simuler une présence à la maison pendant vos vacances.
+
+Vous pouvez :
+
+Définir vos dates d'absence
+
+Activer la simulation (lumières, volets, TV...)
+
+Choisir entre un mode fixe ou aléatoire
+
+
+Une fois activée, les automatismes fonctionnent en autonomie jusqu'à votre retour.
+
+type: entities title: 📅 Dates de vacances entities:
+
+entity: input_datetime.depart_vacances
+
+entity: input_datetime.retour_vacances
+
+
+type: entities title: ⚙️ Contrôle de la simulation entities:
+
+entity: input_boolean.simulation_presence
+
+entity: input_select.mode_simulation_horaires
+
+
+type: entities title: ⚙️ Options de simulation entities:
+
+entity: input_boolean.simulation_lumieres
+
+entity: input_boolean.simulation_volets
+
+entity: input_boolean.simulation_multimedia
+
+entity: input_boolean.simulation_cumulus
+
+entity: input_boolean.simulation_heure_ete
+
+
+type: conditional conditions:
+
+entity: input_boolean.simulation_presence state: "on" card: type: entities title: ✅ Simulation active entities:
+
+entity: input_boolean.simulation_lumieres
+
+entity: input_boolean.simulation_volets
+
+entity: input_boolean.simulation_multimedia
+
+entity: input_select.mode_simulation_horaires
+
+
+
+type: conditional conditions:
+
+entity: input_select.mode_simulation_horaires state: Aléatoire card: type: entities title: 🕒 Horaires simulés du jour (matin) entities:
+
+entity: input_datetime.radio_on_random name: 📻 Radio ON
+
+entity: input_datetime.radio_off_random name: 📻 Radio OFF
+
+
+
+type: conditional conditions:
+
+entity: input_select.mode_simulation_horaires state: Aléatoire card: type: entities title: 🌝 Horaires simulés du jour (soir) entities:
+
+entity: input_datetime.lumiere_on_random name: 💡 Lumières ON
+
+entity: input_datetime.lumiere_off_random name: 💡 Lumières OFF
+
+type: call-service name: 🔄 Générer horaires aléatoires action_name: Générer service: script.generer_horaires_aleatoires_manuellement
+
+
+
+
