@@ -1,0 +1,51 @@
+generer_horaires_aleatoires_manuellement:
+  alias: 🎲 Générer horaires aléatoires manuellement
+  description: >
+    Génère immédiatement les horaires aléatoires pour lumières et radio
+    selon les plages définies et l'état du switch heure d'été.
+  sequence:
+    - variables:
+        h_ete: "{{ 1 if is_state('input_boolean.simulation_heure_ete', 'on') else 0 }}"
+        matin_debut: "{{ state_attr('input_datetime.simulation_matin_debut', 'hour') + h_ete }}"
+        matin_fin: "{{ state_attr('input_datetime.simulation_matin_fin', 'hour') + h_ete }}"
+        soir_debut: "{{ state_attr('input_datetime.simulation_soir_debut', 'hour') + h_ete }}"
+        soir_fin: "{{ state_attr('input_datetime.simulation_soir_fin', 'hour') + h_ete }}"
+
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.lumiere_on_random
+      data:
+        time: >
+          {% set h = range(soir_debut, soir_fin) | random %}
+          {% set m = range(0, 60) | random %}
+          {{ '{:02d}:{:02d}:00'.format(h, m) }}
+
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.lumiere_off_random
+      data:
+        time: >
+          {% set h = state_attr('input_datetime.lumiere_on_random', 'hour') %}
+          {% set m = state_attr('input_datetime.lumiere_on_random', 'minute') %}
+          {% set t = now().replace(hour=h, minute=m, second=0) + timedelta(minutes=range(45, 120) | random) %}
+          {{ t.strftime('%H:%M:%S') }}
+
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.radio_on_random
+      data:
+        time: >
+          {% set h = range(matin_debut, matin_fin) | random %}
+          {% set m = range(0, 60) | random %}
+          {{ '{:02d}:{:02d}:00'.format(h, m) }}
+
+    - service: input_datetime.set_datetime
+      target:
+        entity_id: input_datetime.radio_off_random
+      data:
+        time: >
+          {% set h = state_attr('input_datetime.radio_on_random', 'hour') %}
+          {% set m = state_attr('input_datetime.radio_on_random', 'minute') %}
+          {% set t = now().replace(hour=h, minute=m, second=0) + timedelta(minutes=range(30, 90) | random) %}
+          {{ t.strftime('%H:%M:%S') }}
+  mode: single
