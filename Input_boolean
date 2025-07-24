@@ -1,0 +1,31 @@
+simulation_presence:
+  name: Activer simulation de présence
+  icon: mdi:home-lightbulb
+
+simulation_lumieres:
+  name: Simulation des lumières
+  icon: mdi:lightbulb-auto
+
+simulation_volets:
+  name: Simulation des volets
+  icon: mdi:window-shutter-auto
+
+simulation_multimedia:
+  name: Simulation multimédia (TV / son)
+  icon: mdi:television-classic
+
+simulation_cumulus:
+  name: Simulation – Désactiver le cumulus
+  icon: mdi:water-boiler-off
+
+simulation_heure_ete:
+  name: Heure d'été active ?
+  icon: mdi:weather-sunny
+
+simulation_force_journee:
+  name: Forcer simulation en journée
+  icon: mdi:weather-sunset
+
+simulation_force_soiree:
+  name: Forcer simulation en soirée
+  icon: mdi:weather-night
