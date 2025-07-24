@@ -1,0 +1,49 @@
+depart_vacances:
+  name: Date de départ vacances
+  has_date: true
+  has_time: false
+
+retour_vacances:
+  name: Date de retour vacances
+  has_date: true
+  has_time: false
+
+lumiere_on_random:
+  name: Heure allumage lumières aléatoire
+  has_date: false
+  has_time: true
+
+lumiere_off_random:
+  name: Heure extinction lumières aléatoire
+  has_date: false
+  has_time: true
+
+radio_on_random:
+  name: Heure démarrage radio aléatoire
+  has_date: false
+  has_time: true
+
+radio_off_random:
+  name: Heure arrêt radio aléatoire
+  has_date: false
+  has_time: true
+
+simulation_matin_debut:
+  name: Début plage matin (fixe)
+  has_time: true
+  has_date: false
+
+simulation_matin_fin:
+  name: Fin plage matin (fixe)
+  has_time: true
+  has_date: false
+
+simulation_soir_debut:
+  name: Début plage soir (fixe)
+  has_time: true
+  has_date: false
+
+simulation_soir_fin:
+  name: Fin plage soir (fixe)
+  has_time: true
+  has_date: false
